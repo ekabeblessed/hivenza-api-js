@@ -116,3 +116,10 @@ It checks `Hivenza-Signature: t=<seconds>,v1=<signature>` (HMAC-SHA256 of `<t>.<
 The API is version 1 and only grows: new endpoints, fields and events. This package follows semantic versioning; the types are made from the API's OpenAPI file, so a new endpoint is a new minor version. Unknown fields in an answer are left as they come.
 
 MIT licence.
+
+## Links
+
+- [Hivenza](https://hivenza.com): the social media workspace this client belongs to, for teams that run one brand or many.
+- [Developer documentation](https://hivenza.com/developers) and the [API reference](https://hivenza.com/developers/reference).
+- [The chat package](https://www.npmjs.com/package/@hivenza/chat) for putting Hivenza's chat in your website or app.
+- [Report an issue](https://github.com/ekabeblessed/hivenza-api-js/issues).
