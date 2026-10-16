@@ -187,9 +187,29 @@ export interface paths {
         put?: never;
         /**
          * Add a file from a link
-         * @description Hivenza downloads an image or video (up to 25 MB) from a public HTTPS address. Bigger files: use POST /media/uploads.
+         * @description Hivenza downloads an image or video (up to 25 MB) from a public HTTPS address. Bigger files: use POST /media/uploads. Several files at once: POST /media/from-urls.
          */
         post: operations["createMediaFromUrl"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/media/from-urls": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add several files from links
+         * @description Up to 10 links, downloaded at the same time (a listing’s photos in one call). Each one answers on its own: `media` when it worked, `error` when it didn’t, in the order sent; one bad link doesn’t stop the others.
+         */
+        post: operations["createMediaFromUrls"];
         delete?: never;
         options?: never;
         head?: never;
@@ -360,6 +380,26 @@ export interface paths {
          * @description For a post waiting for approval. Approved, it goes out at its time (or the one sent); with changes asked for, it goes back to its author with the note. Owners, admins and roles that approve posts only.
          */
         post: operations["decideApproval"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/posts/{postId}/take-down": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Take a published post off the networks
+         * @description Deletes the published copies from the networks, for the accounts given or every account it can be deleted from (an item sold, an offer ended). The post stays in Hivenza with each account’s removal state; the networks are asked in the background, and the post.deleted webhook is not sent until you delete it from Hivenza. Networks that don’t let other apps delete posts are listed in `skipped` with why.
+         */
+        post: operations["takePostDown"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1261,6 +1301,214 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/workflows": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List workflows
+         * @description Every workflow of the workspace, in the order they act.
+         */
+        get: operations["listWorkflows"];
+        put?: never;
+        /**
+         * Create a workflow
+         * @description A draft, from a graph or empty. Nothing runs until it is published.
+         */
+        post: operations["createWorkflow"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/workflows/{workflowId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a workflow
+         * @description With its graph (the draft when there is one), the live graph beside it, and what blocks publishing.
+         */
+        get: operations["getWorkflow"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/workflows/{workflowId}/draft": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Save a workflow’s draft
+         * @description The graph to publish next. The live version keeps running until then. Answers the problems that would block publishing.
+         */
+        put: operations["saveWorkflowDraft"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/workflows/{workflowId}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Publish a workflow
+         * @description Its draft goes live (runs already going finish on the version they started with). Where the workspace asks for four eyes, it waits for someone else to approve it in the app: awaitingApproval says so.
+         */
+        post: operations["publishWorkflow"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/workflows/{workflowId}/pause": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Pause a workflow
+         * @description It starts no new runs; runs going finish unless stopRunning is true.
+         */
+        post: operations["pauseWorkflow"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/workflows/{workflowId}/resume": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Resume a workflow
+         * @description Live again, on its published version.
+         */
+        post: operations["resumeWorkflow"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/workflows/{workflowId}/runs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List a workflow’s runs
+         * @description Newest first, on the key’s brands.
+         */
+        get: operations["listWorkflowRuns"];
+        put?: never;
+        /**
+         * Start a run
+         * @description Runs a live workflow now, on a conversation or a contact (or on neither, for one started from the API), with the values it starts with (its inputs, {{vars.name}} in its steps; unknown names and missing required ones are refused). Its trigger must be "From the API" or "Run by hand" (by hand needs a conversation). The audience is not checked: you chose who. Send an Idempotency-Key so a retry starts it once.
+         */
+        post: operations["runWorkflow"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/workflow-runs/{runId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a run
+         * @description With every step it did, in order: the run log codes and the words after them.
+         */
+        get: operations["getWorkflowRun"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/conversations/{conversationId}/procedure-answer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Answer an AI procedure that waits
+         * @description When the AI agent follows a procedure that waits for your system or your team (a refund approved, a delivery booked), this answer lets it go on with the customer at once. The answer is read as data, never as instructions.
+         */
+        post: operations["answerAiProcedure"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/workflow-runs/{runId}/stop": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Stop a run
+         * @description A run going or waiting stops where it is.
+         */
+        post: operations["stopWorkflowRun"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1297,7 +1545,7 @@ export interface components {
                 name: string;
                 /** @enum {string} */
                 mode: "live" | "test";
-                scopes: ("brands:read" | "accounts:read" | "media:write" | "posts:read" | "posts:write" | "posts:publish" | "inbox:read" | "inbox:write" | "tickets:read" | "tickets:write" | "contacts:read" | "contacts:write" | "analytics:read" | "listening:read" | "webhooks:manage")[];
+                scopes: ("brands:read" | "accounts:read" | "media:write" | "posts:read" | "posts:write" | "posts:publish" | "inbox:read" | "inbox:write" | "tickets:read" | "tickets:write" | "contacts:read" | "contacts:write" | "analytics:read" | "listening:read" | "webhooks:manage" | "workflows:read" | "workflows:write")[];
                 /** @description The brands the key is limited to; empty for every brand. */
                 brandIds: string[];
                 expiresAt: string | null;
@@ -1378,6 +1626,18 @@ export interface components {
             /** Format: date-time */
             createdAt: string;
         };
+        MediaFromUrlsResult: {
+            /** @constant */
+            object: "list";
+            data: {
+                url: string;
+                media: components["schemas"]["Media"] | null;
+                error: {
+                    code: string;
+                    message: string;
+                } | null;
+            }[];
+        };
         Post: {
             id: string;
             /** @constant */
@@ -1391,6 +1651,19 @@ export interface components {
                 state: "pending" | "approved" | "changes_requested";
                 note: string | null;
             } | null;
+            /** @description Only on creating with skipInvalid: the accounts left out because the post breaks their network’s rules, and why. */
+            skipped?: {
+                accountId: string;
+                platform: string | null;
+                issues: {
+                    level: string;
+                    code: string;
+                    field?: string | null;
+                    message: string;
+                    max?: number;
+                    length?: number;
+                }[];
+            }[];
             text: string;
             firstComment: string;
             scheduledAt: string | null;
@@ -1418,7 +1691,7 @@ export interface components {
             /** @enum {string} */
             platform: "facebook_page" | "instagram" | "threads" | "bluesky" | "linkedin" | "linkedin_page" | "youtube" | "tiktok" | "x" | "telegram" | "google_business" | "pinterest" | "discord" | "slack" | "teams";
             /** @enum {string} */
-            status: "pending" | "scheduled" | "publishing" | "published" | "failed";
+            status: "pending" | "scheduled" | "publishing" | "published" | "in_drafts" | "failed";
             /** @description The post’s id on the network, once published. */
             externalPostId: string | null;
             permalink: string | null;
@@ -1491,6 +1764,11 @@ export interface components {
             /** @description For publish=schedule: ISO 8601, or “2026-10-14T09:30” without an offset, read in the brand’s timezone. */
             scheduledAt?: string;
             /**
+             * @description When sending out (not a draft): leave out the accounts whose network’s rules the post breaks, or that need reconnecting, and send it to the rest. They are listed in `skipped`. Without it, one bad account refuses the whole post (422).
+             * @default false
+             */
+            skipInvalid: boolean;
+            /**
              * @description What happens to it: a draft (default), on the schedule at scheduledAt, in the brand’s next queue time, or out now.
              * @default draft
              * @enum {string}
@@ -1511,6 +1789,10 @@ export interface components {
                     code: string;
                     field: string;
                     message: string;
+                    /** @description For a text that is too long (caption_too_long): the most characters this network takes, counted the way the network counts (Bluesky: characters as a reader sees them, an emoji is one; the others: UTF-16 units). */
+                    max?: number;
+                    /** @description For a text that is too long: how many characters it has, counted the same way as max, and as the message says. */
+                    length?: number;
                 }[];
             }[];
         };
@@ -1563,6 +1845,14 @@ export interface components {
             }[];
             firstComment?: string;
             labelIds?: string[];
+        };
+        TakeDownResult: {
+            post: components["schemas"]["Post"];
+            requested: unknown[];
+            skipped: {
+                accountId: unknown;
+                reason: string;
+            }[];
         };
         Design: {
             id: string;
@@ -1803,7 +2093,7 @@ export interface components {
             object: "webhook";
             url: string;
             name: string | null;
-            events: ("message.received" | "conversation.created" | "conversation.done" | "contact.created" | "contact.updated" | "post.published" | "post.failed" | "rating.received" | "ticket.assigned" | "ticket.state_changed" | "ticket.sla_breached" | "request.submitted" | "message.sent" | "post.scheduled" | "post.deleted" | "media.ready" | "account.disconnected" | "mention.received" | "activity.logged")[];
+            events: ("message.received" | "conversation.created" | "conversation.done" | "contact.created" | "contact.updated" | "post.published" | "post.failed" | "rating.received" | "ticket.assigned" | "ticket.state_changed" | "ticket.sla_breached" | "request.submitted" | "message.sent" | "post.scheduled" | "post.deleted" | "media.ready" | "account.disconnected" | "mention.received" | "activity.logged" | "workflow.run_started" | "workflow.step_done" | "workflow.goal_reached" | "workflow.run_failed")[];
             /** @description Only these brands’ events; empty for every brand. */
             brandIds: string[];
             enabled: boolean;
@@ -1850,6 +2140,52 @@ export interface components {
                 [key: string]: unknown;
             };
             test?: boolean;
+        };
+        Workflow: {
+            id: string;
+            /** @constant */
+            object: "workflow";
+            name: string;
+            description: string | null;
+            /** @enum {string} */
+            state: "draft" | "live" | "paused";
+            trigger: string | null;
+            liveVersion: number | null;
+            /** @description Changes not published yet, when there are some. */
+            draftVersion: number | null;
+            /** @description Send it back with a draft or a publish: a change saved since is refused (409 workflow_stale). */
+            revision: number;
+            awaitingApproval: boolean;
+            stats: {
+                started: number;
+                finished: number;
+                goal: number;
+                failed: number;
+                lastRunAt: string | null;
+            };
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        WorkflowRun: {
+            id: string;
+            /** @constant */
+            object: "workflow_run";
+            workflowId: string;
+            version: number;
+            /** @enum {string} */
+            status: "running" | "waiting" | "done" | "goal" | "exited" | "failed" | "cancelled";
+            outcome: string | null;
+            conversationId: string | null;
+            contactId: string | null;
+            waiting: {
+                kind: string;
+                until: string | null;
+            } | null;
+            /** Format: date-time */
+            startedAt: string;
+            endedAt: string | null;
         };
     };
     responses: never;
@@ -2070,7 +2406,10 @@ export interface operations {
             query?: {
                 /** @description A brand_… id. */
                 brandId?: string;
-                platform?: "facebook_page" | "instagram" | "threads" | "bluesky" | "linkedin" | "linkedin_page" | "youtube" | "tiktok" | "x" | "telegram" | "google_business" | "pinterest" | "discord" | "slack" | "teams";
+                /** @description One network or several, separated by commas (instagram,facebook_page,tiktok). */
+                platform?: string;
+                /** @description true: only accounts that can publish now (connected, not inbox-only). false: the ones that can’t, for a "reconnect" list. */
+                canPublish?: "true" | "false";
                 /** @description How many per page, 1 to 100. */
                 limit?: number;
                 /** @description nextCursor from the previous page. */
@@ -2767,6 +3106,78 @@ export interface operations {
              *
              *     `download_failed`: The address couldn’t be read, isn’t public, isn’t an image or video, or is too big.
              */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description No key, or a key that is wrong, deleted or expired. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description The key can't do this (missing_scope, ip_not_allowed, api_paused…). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too many requests: wait for Retry-After. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    createMediaFromUrls: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Any unique value (a UUID). Sending the same request again with it within 24 hours returns the first answer instead of doing it twice. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * @description A brand_… id.
+                     * @example brand_3kTqM9xWvB2aLpZ8cR1dEf
+                     */
+                    brandId: string;
+                    urls: string[];
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    "X-Request-Id": components["headers"]["X-Request-Id"];
+                    "RateLimit-Remaining": components["headers"]["RateLimit-Remaining"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MediaFromUrlsResult"];
+                };
+            };
+            /** @description The request has a problem (validation_failed, invalid_cursor…). */
             400: {
                 headers: {
                     [name: string]: unknown;
@@ -3530,6 +3941,11 @@ export interface operations {
                             [key: string]: unknown;
                         };
                     }[];
+                    /**
+                     * @description When sending out (not a draft): leave out the accounts whose network’s rules the post breaks, or that need reconnecting, and send it to the rest. They are listed in `skipped`. Without it, one bad account refuses the whole post (422).
+                     * @default false
+                     */
+                    skipInvalid?: boolean;
                 };
             };
         };
@@ -3937,6 +4353,102 @@ export interface operations {
              * @description A conflict (idempotency_mismatch, request_in_progress, version_conflict…).
              *
              *     `not_waiting`: The post isn’t waiting for approval.
+             */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too many requests: wait for Retry-After. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    takePostDown: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Any unique value (a UUID). Sending the same request again with it within 24 hours returns the first answer instead of doing it twice. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                postId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description Left out: every account it can be deleted from. */
+                    accountIds?: string[];
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    "X-Request-Id": components["headers"]["X-Request-Id"];
+                    "RateLimit-Remaining": components["headers"]["RateLimit-Remaining"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TakeDownResult"];
+                };
+            };
+            /**
+             * @description The request has a problem (validation_failed, invalid_cursor…).
+             *
+             *     `nothing_to_remove`: The post isn’t published anywhere it can be deleted from.
+             */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description No key, or a key that is wrong, deleted or expired. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description The key can't do this (missing_scope, ip_not_allowed, api_paused…). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not found, or not reachable with this key (another workspace's, outside the key's brands). */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /**
+             * @description A conflict (idempotency_mismatch, request_in_progress, version_conflict…).
+             *
+             *     `post_locked`: It is being published, or already being deleted.
              */
             409: {
                 headers: {
@@ -7837,7 +8349,7 @@ export interface operations {
                     /** Format: uri */
                     url: string;
                     name?: string;
-                    events: ("message.received" | "conversation.created" | "conversation.done" | "contact.created" | "contact.updated" | "post.published" | "post.failed" | "rating.received" | "ticket.assigned" | "ticket.state_changed" | "ticket.sla_breached" | "request.submitted" | "message.sent" | "post.scheduled" | "post.deleted" | "media.ready" | "account.disconnected" | "mention.received" | "activity.logged")[];
+                    events: ("message.received" | "conversation.created" | "conversation.done" | "contact.created" | "contact.updated" | "post.published" | "post.failed" | "rating.received" | "ticket.assigned" | "ticket.state_changed" | "ticket.sla_breached" | "request.submitted" | "message.sent" | "post.scheduled" | "post.deleted" | "media.ready" | "account.disconnected" | "mention.received" | "activity.logged" | "workflow.run_started" | "workflow.step_done" | "workflow.goal_reached" | "workflow.run_failed")[];
                     brandIds?: string[];
                     /** @default true */
                     enabled?: boolean;
@@ -8144,7 +8656,7 @@ export interface operations {
                     /** Format: uri */
                     url?: string;
                     name?: string;
-                    events?: ("message.received" | "conversation.created" | "conversation.done" | "contact.created" | "contact.updated" | "post.published" | "post.failed" | "rating.received" | "ticket.assigned" | "ticket.state_changed" | "ticket.sla_breached" | "request.submitted" | "message.sent" | "post.scheduled" | "post.deleted" | "media.ready" | "account.disconnected" | "mention.received" | "activity.logged")[];
+                    events?: ("message.received" | "conversation.created" | "conversation.done" | "contact.created" | "contact.updated" | "post.published" | "post.failed" | "rating.received" | "ticket.assigned" | "ticket.state_changed" | "ticket.sla_breached" | "request.submitted" | "message.sent" | "post.scheduled" | "post.deleted" | "media.ready" | "account.disconnected" | "mention.received" | "activity.logged" | "workflow.run_started" | "workflow.step_done" | "workflow.goal_reached" | "workflow.run_failed")[];
                     brandIds?: string[];
                     /** @default true */
                     enabled?: boolean;
@@ -8297,7 +8809,7 @@ export interface operations {
             content: {
                 "application/json": {
                     /** @enum {string} */
-                    event?: "message.received" | "conversation.created" | "conversation.done" | "contact.created" | "contact.updated" | "post.published" | "post.failed" | "rating.received" | "ticket.assigned" | "ticket.state_changed" | "ticket.sla_breached" | "request.submitted" | "message.sent" | "post.scheduled" | "post.deleted" | "media.ready" | "account.disconnected" | "mention.received" | "activity.logged";
+                    event?: "message.received" | "conversation.created" | "conversation.done" | "contact.created" | "contact.updated" | "post.published" | "post.failed" | "rating.received" | "ticket.assigned" | "ticket.state_changed" | "ticket.sla_breached" | "request.submitted" | "message.sent" | "post.scheduled" | "post.deleted" | "media.ready" | "account.disconnected" | "mention.received" | "activity.logged" | "workflow.run_started" | "workflow.step_done" | "workflow.goal_reached" | "workflow.run_failed";
                 };
             };
         };
@@ -8525,7 +9037,7 @@ export interface operations {
     listEvents: {
         parameters: {
             query?: {
-                type?: "message.received" | "conversation.created" | "conversation.done" | "contact.created" | "contact.updated" | "post.published" | "post.failed" | "rating.received" | "ticket.assigned" | "ticket.state_changed" | "ticket.sla_breached" | "request.submitted" | "message.sent" | "post.scheduled" | "post.deleted" | "media.ready" | "account.disconnected" | "mention.received" | "activity.logged";
+                type?: "message.received" | "conversation.created" | "conversation.done" | "contact.created" | "contact.updated" | "post.published" | "post.failed" | "rating.received" | "ticket.assigned" | "ticket.state_changed" | "ticket.sla_breached" | "request.submitted" | "message.sent" | "post.scheduled" | "post.deleted" | "media.ready" | "account.disconnected" | "mention.received" | "activity.logged" | "workflow.run_started" | "workflow.step_done" | "workflow.goal_reached" | "workflow.run_failed";
                 /** @description A brand_… id. */
                 brandId?: string;
                 createdAfter?: string;
@@ -8616,6 +9128,1262 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Event"];
+                };
+            };
+            /** @description The request has a problem (validation_failed, invalid_cursor…). */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description No key, or a key that is wrong, deleted or expired. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description The key can't do this (missing_scope, ip_not_allowed, api_paused…). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not found, or not reachable with this key (another workspace's, outside the key's brands). */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too many requests: wait for Retry-After. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    listWorkflows: {
+        parameters: {
+            query?: {
+                state?: "draft" | "live" | "paused";
+                cursor?: string;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    "X-Request-Id": components["headers"]["X-Request-Id"];
+                    "RateLimit-Remaining": components["headers"]["RateLimit-Remaining"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        object: "list";
+                        data: components["schemas"]["Workflow"][];
+                        /** @description More items after these: ask again with cursor=nextCursor. */
+                        hasMore: boolean;
+                        nextCursor: string | null;
+                    };
+                };
+            };
+            /** @description The request has a problem (validation_failed, invalid_cursor…). */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description No key, or a key that is wrong, deleted or expired. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description The key can't do this (missing_scope, ip_not_allowed, api_paused…). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too many requests: wait for Retry-After. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    createWorkflow: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Any unique value (a UUID). Sending the same request again with it within 24 hours returns the first answer instead of doing it twice. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    name: string;
+                    description?: string;
+                    /** @description The workflow as the builder keeps it: trigger, audience, entry, steps (docs/WORKFLOWS.md). Exported files have the same shape. */
+                    graph?: {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            201: {
+                headers: {
+                    "X-Request-Id": components["headers"]["X-Request-Id"];
+                    "RateLimit-Remaining": components["headers"]["RateLimit-Remaining"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: string;
+                        /** @constant */
+                        object: "workflow";
+                        name: string;
+                        description: string | null;
+                        /** @enum {string} */
+                        state: "draft" | "live" | "paused";
+                        trigger: string | null;
+                        liveVersion: number | null;
+                        /** @description Changes not published yet, when there are some. */
+                        draftVersion: number | null;
+                        /** @description Send it back with a draft or a publish: a change saved since is refused (409 workflow_stale). */
+                        revision: number;
+                        awaitingApproval: boolean;
+                        stats: {
+                            started: number;
+                            finished: number;
+                            goal: number;
+                            failed: number;
+                            lastRunAt: string | null;
+                        };
+                        /** Format: date-time */
+                        createdAt: string;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        /** @description The draft when there is one, else the live version. */
+                        graph: {
+                            [key: string]: unknown;
+                        } | null;
+                        liveGraph: {
+                            [key: string]: unknown;
+                        } | null;
+                        /** @description What blocks publishing the draft (empty: it can be published). */
+                        problems: {
+                            step: string | null;
+                            message: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description The request has a problem (validation_failed, invalid_cursor…). */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description No key, or a key that is wrong, deleted or expired. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /**
+             * @description The workspace's plan doesn't include this.
+             *
+             *     `plan_limit`: Workflows need the Pro plan.
+             */
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description The key can't do this (missing_scope, ip_not_allowed, api_paused…). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too many requests: wait for Retry-After. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getWorkflow: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workflowId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    "X-Request-Id": components["headers"]["X-Request-Id"];
+                    "RateLimit-Remaining": components["headers"]["RateLimit-Remaining"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: string;
+                        /** @constant */
+                        object: "workflow";
+                        name: string;
+                        description: string | null;
+                        /** @enum {string} */
+                        state: "draft" | "live" | "paused";
+                        trigger: string | null;
+                        liveVersion: number | null;
+                        /** @description Changes not published yet, when there are some. */
+                        draftVersion: number | null;
+                        /** @description Send it back with a draft or a publish: a change saved since is refused (409 workflow_stale). */
+                        revision: number;
+                        awaitingApproval: boolean;
+                        stats: {
+                            started: number;
+                            finished: number;
+                            goal: number;
+                            failed: number;
+                            lastRunAt: string | null;
+                        };
+                        /** Format: date-time */
+                        createdAt: string;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        /** @description The draft when there is one, else the live version. */
+                        graph: {
+                            [key: string]: unknown;
+                        } | null;
+                        liveGraph: {
+                            [key: string]: unknown;
+                        } | null;
+                        /** @description What blocks publishing the draft (empty: it can be published). */
+                        problems: {
+                            step: string | null;
+                            message: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description The request has a problem (validation_failed, invalid_cursor…). */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description No key, or a key that is wrong, deleted or expired. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description The key can't do this (missing_scope, ip_not_allowed, api_paused…). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not found, or not reachable with this key (another workspace's, outside the key's brands). */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too many requests: wait for Retry-After. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    saveWorkflowDraft: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Any unique value (a UUID). Sending the same request again with it within 24 hours returns the first answer instead of doing it twice. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                workflowId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description The workflow as the builder keeps it: trigger, audience, entry, steps (docs/WORKFLOWS.md). Exported files have the same shape. */
+                    graph: {
+                        [key: string]: unknown;
+                    };
+                    /** @description The revision you read; a change saved since is refused. */
+                    revision?: number;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    "X-Request-Id": components["headers"]["X-Request-Id"];
+                    "RateLimit-Remaining": components["headers"]["RateLimit-Remaining"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: string;
+                        /** @constant */
+                        object: "workflow";
+                        name: string;
+                        description: string | null;
+                        /** @enum {string} */
+                        state: "draft" | "live" | "paused";
+                        trigger: string | null;
+                        liveVersion: number | null;
+                        /** @description Changes not published yet, when there are some. */
+                        draftVersion: number | null;
+                        /** @description Send it back with a draft or a publish: a change saved since is refused (409 workflow_stale). */
+                        revision: number;
+                        awaitingApproval: boolean;
+                        stats: {
+                            started: number;
+                            finished: number;
+                            goal: number;
+                            failed: number;
+                            lastRunAt: string | null;
+                        };
+                        /** Format: date-time */
+                        createdAt: string;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        /** @description The draft when there is one, else the live version. */
+                        graph: {
+                            [key: string]: unknown;
+                        } | null;
+                        liveGraph: {
+                            [key: string]: unknown;
+                        } | null;
+                        /** @description What blocks publishing the draft (empty: it can be published). */
+                        problems: {
+                            step: string | null;
+                            message: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description The request has a problem (validation_failed, invalid_cursor…). */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description No key, or a key that is wrong, deleted or expired. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description The key can't do this (missing_scope, ip_not_allowed, api_paused…). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not found, or not reachable with this key (another workspace's, outside the key's brands). */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /**
+             * @description A conflict (idempotency_mismatch, request_in_progress, version_conflict…).
+             *
+             *     `workflow_stale`: Someone saved it after the revision you sent.
+             *
+             *     `workflow_locked`: Someone is editing it in the builder right now.
+             */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too many requests: wait for Retry-After. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    publishWorkflow: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Any unique value (a UUID). Sending the same request again with it within 24 hours returns the first answer instead of doing it twice. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                workflowId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    note?: string;
+                    /** @description The revision you read; a change saved since is refused. */
+                    revision?: number;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    "X-Request-Id": components["headers"]["X-Request-Id"];
+                    "RateLimit-Remaining": components["headers"]["RateLimit-Remaining"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: string;
+                        /** @constant */
+                        object: "workflow";
+                        name: string;
+                        description: string | null;
+                        /** @enum {string} */
+                        state: "draft" | "live" | "paused";
+                        trigger: string | null;
+                        liveVersion: number | null;
+                        /** @description Changes not published yet, when there are some. */
+                        draftVersion: number | null;
+                        /** @description Send it back with a draft or a publish: a change saved since is refused (409 workflow_stale). */
+                        revision: number;
+                        awaitingApproval: boolean;
+                        stats: {
+                            started: number;
+                            finished: number;
+                            goal: number;
+                            failed: number;
+                            lastRunAt: string | null;
+                        };
+                        /** Format: date-time */
+                        createdAt: string;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        /** @description The draft when there is one, else the live version. */
+                        graph: {
+                            [key: string]: unknown;
+                        } | null;
+                        liveGraph: {
+                            [key: string]: unknown;
+                        } | null;
+                        /** @description What blocks publishing the draft (empty: it can be published). */
+                        problems: {
+                            step: string | null;
+                            message: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description The request has a problem (validation_failed, invalid_cursor…). */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description No key, or a key that is wrong, deleted or expired. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description The key can't do this (missing_scope, ip_not_allowed, api_paused…). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not found, or not reachable with this key (another workspace's, outside the key's brands). */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /**
+             * @description A conflict (idempotency_mismatch, request_in_progress, version_conflict…).
+             *
+             *     `workflow_problems`: The draft has problems to fix first (listed in the error).
+             */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too many requests: wait for Retry-After. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    pauseWorkflow: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Any unique value (a UUID). Sending the same request again with it within 24 hours returns the first answer instead of doing it twice. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                workflowId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @default false */
+                    stopRunning?: boolean;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    "X-Request-Id": components["headers"]["X-Request-Id"];
+                    "RateLimit-Remaining": components["headers"]["RateLimit-Remaining"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: string;
+                        /** @constant */
+                        object: "workflow";
+                        name: string;
+                        description: string | null;
+                        /** @enum {string} */
+                        state: "draft" | "live" | "paused";
+                        trigger: string | null;
+                        liveVersion: number | null;
+                        /** @description Changes not published yet, when there are some. */
+                        draftVersion: number | null;
+                        /** @description Send it back with a draft or a publish: a change saved since is refused (409 workflow_stale). */
+                        revision: number;
+                        awaitingApproval: boolean;
+                        stats: {
+                            started: number;
+                            finished: number;
+                            goal: number;
+                            failed: number;
+                            lastRunAt: string | null;
+                        };
+                        /** Format: date-time */
+                        createdAt: string;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        /** @description The draft when there is one, else the live version. */
+                        graph: {
+                            [key: string]: unknown;
+                        } | null;
+                        liveGraph: {
+                            [key: string]: unknown;
+                        } | null;
+                        /** @description What blocks publishing the draft (empty: it can be published). */
+                        problems: {
+                            step: string | null;
+                            message: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description The request has a problem (validation_failed, invalid_cursor…). */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description No key, or a key that is wrong, deleted or expired. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description The key can't do this (missing_scope, ip_not_allowed, api_paused…). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not found, or not reachable with this key (another workspace's, outside the key's brands). */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too many requests: wait for Retry-After. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    resumeWorkflow: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Any unique value (a UUID). Sending the same request again with it within 24 hours returns the first answer instead of doing it twice. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                workflowId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @default false */
+                    stopRunning?: boolean;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    "X-Request-Id": components["headers"]["X-Request-Id"];
+                    "RateLimit-Remaining": components["headers"]["RateLimit-Remaining"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: string;
+                        /** @constant */
+                        object: "workflow";
+                        name: string;
+                        description: string | null;
+                        /** @enum {string} */
+                        state: "draft" | "live" | "paused";
+                        trigger: string | null;
+                        liveVersion: number | null;
+                        /** @description Changes not published yet, when there are some. */
+                        draftVersion: number | null;
+                        /** @description Send it back with a draft or a publish: a change saved since is refused (409 workflow_stale). */
+                        revision: number;
+                        awaitingApproval: boolean;
+                        stats: {
+                            started: number;
+                            finished: number;
+                            goal: number;
+                            failed: number;
+                            lastRunAt: string | null;
+                        };
+                        /** Format: date-time */
+                        createdAt: string;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        /** @description The draft when there is one, else the live version. */
+                        graph: {
+                            [key: string]: unknown;
+                        } | null;
+                        liveGraph: {
+                            [key: string]: unknown;
+                        } | null;
+                        /** @description What blocks publishing the draft (empty: it can be published). */
+                        problems: {
+                            step: string | null;
+                            message: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description The request has a problem (validation_failed, invalid_cursor…). */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description No key, or a key that is wrong, deleted or expired. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description The key can't do this (missing_scope, ip_not_allowed, api_paused…). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not found, or not reachable with this key (another workspace's, outside the key's brands). */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too many requests: wait for Retry-After. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    listWorkflowRuns: {
+        parameters: {
+            query?: {
+                status?: "running" | "waiting" | "done" | "goal" | "exited" | "failed" | "cancelled";
+                /** @description A wfrun_… id. */
+                cursor?: string;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                workflowId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    "X-Request-Id": components["headers"]["X-Request-Id"];
+                    "RateLimit-Remaining": components["headers"]["RateLimit-Remaining"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        object: "list";
+                        data: components["schemas"]["WorkflowRun"][];
+                        /** @description More items after these: ask again with cursor=nextCursor. */
+                        hasMore: boolean;
+                        nextCursor: string | null;
+                    };
+                };
+            };
+            /** @description The request has a problem (validation_failed, invalid_cursor…). */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description No key, or a key that is wrong, deleted or expired. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description The key can't do this (missing_scope, ip_not_allowed, api_paused…). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not found, or not reachable with this key (another workspace's, outside the key's brands). */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too many requests: wait for Retry-After. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    runWorkflow: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Any unique value (a UUID). Sending the same request again with it within 24 hours returns the first answer instead of doing it twice. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                workflowId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * @description A conv_… id.
+                     * @example conv_3kTqM9xWvB2aLpZ8cR1dEf
+                     */
+                    conversationId?: string;
+                    /**
+                     * @description A contact_… id.
+                     * @example contact_3kTqM9xWvB2aLpZ8cR1dEf
+                     */
+                    contactId?: string;
+                    /** @default {} */
+                    inputs?: {
+                        [key: string]: string;
+                    };
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            202: {
+                headers: {
+                    "X-Request-Id": components["headers"]["X-Request-Id"];
+                    "RateLimit-Remaining": components["headers"]["RateLimit-Remaining"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkflowRun"];
+                };
+            };
+            /** @description The request has a problem (validation_failed, invalid_cursor…). */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description No key, or a key that is wrong, deleted or expired. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description The key can't do this (missing_scope, ip_not_allowed, api_paused…). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not found, or not reachable with this key (another workspace's, outside the key's brands). */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /**
+             * @description A conflict (idempotency_mismatch, request_in_progress, version_conflict…).
+             *
+             *     `conflict`: Not live, another trigger, already running there, or over its limits.
+             */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too many requests: wait for Retry-After. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getWorkflowRun: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                runId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    "X-Request-Id": components["headers"]["X-Request-Id"];
+                    "RateLimit-Remaining": components["headers"]["RateLimit-Remaining"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: string;
+                        /** @constant */
+                        object: "workflow_run";
+                        workflowId: string;
+                        version: number;
+                        /** @enum {string} */
+                        status: "running" | "waiting" | "done" | "goal" | "exited" | "failed" | "cancelled";
+                        outcome: string | null;
+                        conversationId: string | null;
+                        contactId: string | null;
+                        waiting: {
+                            kind: string;
+                            until: string | null;
+                        } | null;
+                        /** Format: date-time */
+                        startedAt: string;
+                        endedAt: string | null;
+                        steps: {
+                            step: string;
+                            type: string;
+                            iteration: number;
+                            status: string;
+                            parts: {
+                                code: string;
+                                text?: string;
+                                reason?: string;
+                            }[];
+                            error: string | null;
+                            /** Format: date-time */
+                            at: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description The request has a problem (validation_failed, invalid_cursor…). */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description No key, or a key that is wrong, deleted or expired. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description The key can't do this (missing_scope, ip_not_allowed, api_paused…). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not found, or not reachable with this key (another workspace's, outside the key's brands). */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too many requests: wait for Retry-After. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    answerAiProcedure: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Any unique value (a UUID). Sending the same request again with it within 24 hours returns the first answer instead of doing it twice. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                conversationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    text: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    "X-Request-Id": components["headers"]["X-Request-Id"];
+                    "RateLimit-Remaining": components["headers"]["RateLimit-Remaining"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description The request has a problem (validation_failed, invalid_cursor…). */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description No key, or a key that is wrong, deleted or expired. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description The key can't do this (missing_scope, ip_not_allowed, api_paused…). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not found, or not reachable with this key (another workspace's, outside the key's brands). */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /**
+             * @description A conflict (idempotency_mismatch, request_in_progress, version_conflict…).
+             *
+             *     `conflict`: No procedure waits for an answer on this conversation.
+             */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too many requests: wait for Retry-After. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    stopWorkflowRun: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Any unique value (a UUID). Sending the same request again with it within 24 hours returns the first answer instead of doing it twice. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                runId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": Record<string, never>;
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    "X-Request-Id": components["headers"]["X-Request-Id"];
+                    "RateLimit-Remaining": components["headers"]["RateLimit-Remaining"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkflowRun"];
                 };
             };
             /** @description The request has a problem (validation_failed, invalid_cursor…). */

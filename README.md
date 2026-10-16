@@ -111,6 +111,34 @@ async function handler(req, res) {
 
 It checks `Hivenza-Signature: t=<seconds>,v1=<signature>` (HMAC-SHA256 of `<t>.<body>`), takes several `v1` values while a secret is being rolled, and refuses a delivery more than five minutes old (`toleranceSeconds` to change it). On failure it throws `WebhookSignatureError` with a `reason`: `missing_header`, `malformed_header`, `too_old`, `too_new`, `no_match` or `invalid_json`. Web Crypto only: Node 18+, Deno, Bun and edge runtimes.
 
+## Connect with Hivenza (apps that post for their users)
+
+If your app lets its own users post to their Instagram, Facebook or TikTok through Hivenza, `@hivenza/api/connect` makes the OAuth calls for you. Run them on your server: the client secret never goes in a mobile app or a browser. The flow and every call are in the guide "Let your app's users post through Hivenza" on https://hivenza.com/developers.
+
+```ts
+import { authorizeUrl, createPkce, createState, exchangeCode, refreshTokens, revokeToken } from '@hivenza/api/connect';
+import { Hivenza } from '@hivenza/api';
+
+// 1. Send the person to approve your app (keep verifier and state with them).
+const { verifier, challenge } = await createPkce();
+const state = createState();
+const url = authorizeUrl({ clientId, redirectUri, scopes: ['brands:read', 'accounts:read', 'media:write', 'posts:write', 'posts:publish'], state, codeChallenge: challenge });
+
+// 2. They come back to redirectUri with ?code=…&state=… (check the state), then:
+const tokens = await exchangeCode({ clientId, clientSecret, code, redirectUri, codeVerifier: verifier });
+// Keep tokens.refreshToken: it works once, and each renewal gives a new one.
+
+// 3. Call the API as that person, then renew before tokens.expiresAt.
+const hivenza = new Hivenza({ apiKey: tokens.accessToken });
+const accounts = await hivenza.listAccounts({ query: { canPublish: 'true', platform: 'instagram,facebook_page,tiktok' } });
+const renewed = await refreshTokens({ clientId, clientSecret, refreshToken: tokens.refreshToken });
+
+// 4. When they disconnect on your side:
+await revokeToken({ clientId, clientSecret, token: renewed.refreshToken });
+```
+
+A refusal throws `ConnectError` with the standard `error` and a finer `reason` (`code_reused`, `refresh_token_reused`, `refresh_token_invalid`, `code_invalid`). A refresh whose answer was lost may be tried again for about 45 seconds; after that, an old refresh token cuts the connection.
+
 ## Versions
 
 The API is version 1 and only grows: new endpoints, fields and events. This package follows semantic versioning; the types are made from the API's OpenAPI file, so a new endpoint is a new minor version. Unknown fields in an answer are left as they come.
