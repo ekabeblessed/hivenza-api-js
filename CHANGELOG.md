@@ -2,6 +2,13 @@
 
 This package follows semantic versioning: a breaking change only in a new major version.
 
+## 0.3.0
+
+- 168 operations (75 new, none removed, no signature changed incompatibly): the reports datasets (`listReportDatasets`, `reportConversations`, `reportTickets`, `reportTicketEvents`, `reportReviews`, `reportPosts`, `reportAccountMetrics`, `reportWebsiteGa4Days`, `reportUsage`, `reportSupervisionLog`, `reportQueueAlertEvents`); website analytics (`listWebsites`, `getWebsiteOverview`, `getWebsiteJourney`, `getWebsiteFunnels`, `getWebsiteGa4`); knowledge sources and `searchKnowledge`; media folders, `updateMedia`, `cropMedia`, `fitMedia`; links and link stats; known issues; case status, documents and messages; the supervisor (live queue, wall, supervisions, shift report, short tomorrow, queue alerts); ticket approvals; issue-tracker links; checklists; banners; bookings; campaign analytics and people of a workflow; `listContactCampaigns`; `getBrandMailMethod`.
+- Existing operations that changed in the API gained optional fields only (posts, media, conversations, contacts, webhooks, workflows, support analytics).
+- `WEBHOOK_EVENT_TYPES` and `WebhookEventType`: the 38 event types (new: workflow run events, known issues, queue alerts, approvals, issue links, checklists, bookings, `survey.answered`). `WebhookEvent.type` still accepts any string.
+- `VERSION` (the `x-hivenza-client` header) now follows the package version.
+
 ## 0.2.0
 
 - `@hivenza/api/connect`: the calls of "Connect with Hivenza" for apps that post for their users: `createPkce`, `createState`, `authorizeUrl`, `exchangeCode`, `refreshTokens`, `revokeToken` and `ConnectError`. No dependencies; the same code runs on Node, edge runtimes and Bun.

@@ -5,5 +5,5 @@ export { ConnectionError, HivenzaError, RateLimitError, TimeoutError, type Error
 export { OPERATIONS, type OperationInfo } from './generated/operations';
 export type { components, operations, paths } from './generated/schema';
 export type { Args, CallOptions, ItemOf, ListOperationId, Methods, OperationId, Page, Result } from './types';
-export { verifyWebhook, WebhookSignatureError, sign as signWebhook, type SignatureProblem, type VerifyOptions, type WebhookEvent } from './webhooks';
+export { verifyWebhook, WEBHOOK_EVENT_TYPES, WebhookSignatureError, sign as signWebhook, type SignatureProblem, type VerifyOptions, type WebhookEvent, type WebhookEventType } from './webhooks';
 export default Hivenza;

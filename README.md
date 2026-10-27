@@ -86,12 +86,37 @@ hivenza.lastRateLimit; // { limit, remaining, resetSeconds } from the last answe
 
 A key that starts `hvz_test_` works on a pretend brand: publishing runs every check but sends nothing and notifies nobody. Put `[fail:permanent]` in a test post's text to see an error on purpose. `resetTestBrand` puts the pretend accounts back, and `createTestConversation` makes a pretend customer write.
 
+## Reports, website analytics, knowledge and more (0.3.0)
+
+Everything below is a typed method like the rest; the permission each needs is in `OPERATIONS[id].scopes`.
+
+```ts
+// Reports for your own BI tool: a dataset at a time, paged. listReportDatasets names them.
+for await (const row of hivenza.paginate('reportTickets', { query: { from: '2026-10-01', to: '2026-10-31' } })) save(row);
+
+// Website analytics (Hivenza's tracker and Google Analytics 4).
+const sites = await hivenza.listWebsites();
+const overview = await hivenza.getWebsiteOverview({ query: { brandId, from, to } });
+const ga4 = await hivenza.getWebsiteGa4({ query: { brandId, from, to } });
+
+// Knowledge base for the AI agent and the help centre.
+await hivenza.createKnowledgeSource({ body: { /* see the developers' docs */ } as never });
+const hits = await hivenza.searchKnowledge({ body: { query: 'refund policy' } as never });
+
+// Tracked links, known issues, case status, approvals, checklists, bookings, the supervisor's live queue.
+const links = await hivenza.listLinks({ query: { brandId } });
+await hivenza.declareKnownIssue({ body: { /* … */ } as never });
+const queue = await hivenza.getLiveQueue();
+```
+
+The media library gained `updateMedia`, `cropMedia`, `fitMedia` and folders (`listMediaFolders`, `createMediaFolder`, `renameMediaFolder`, `deleteMediaFolder`).
+
 ## Webhooks
 
 Check the signature on the **raw body**, before parsing it:
 
 ```ts
-import { verifyWebhook } from '@hivenza/api/webhooks';
+import { verifyWebhook, WEBHOOK_EVENT_TYPES } from '@hivenza/api/webhooks';
 
 // Express: app.post('/hivenza', express.raw({ type: 'application/json' }), handler)
 async function handler(req, res) {
@@ -102,6 +127,7 @@ async function handler(req, res) {
       secret: process.env.HIVENZA_WEBHOOK_SECRET!,
     });
     if (event.type === 'message.received') {/* … */}
+    // WEBHOOK_EVENT_TYPES lists every type (survey.answered, booking.made, approval.asked…).
     res.sendStatus(200);
   } catch {
     res.sendStatus(400); // not from Hivenza, too old, or changed on the way

@@ -1,6 +1,6 @@
 {
   "name": "@hivenza/api",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "The typed JavaScript client for Hivenza's developer API: publish posts, answer the inbox, read analytics and handle webhooks from your own code.",
   "license": "MIT",
   "type": "module",

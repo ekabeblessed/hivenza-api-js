@@ -2,7 +2,7 @@ import { ConnectionError, HivenzaError, RateLimitError, TimeoutError, type Error
 import { OPERATIONS, type OperationInfo } from './generated/operations';
 import type { Args, CallOptions, ItemOf, ListOperationId, Methods, OperationId, Page } from './types';
 
-export const VERSION = '0.1.0';
+export const VERSION = '0.3.0';
 const DEFAULT_BASE_URL = 'https://api.hivenza.com/v1';
 
 export interface RateLimit {

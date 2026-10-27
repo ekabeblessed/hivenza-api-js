@@ -4,11 +4,54 @@
 //   import { verifyWebhook } from '@hivenza/api/webhooks';
 //   const event = await verifyWebhook({ payload: rawBody, header: req.headers['hivenza-signature'], secret: process.env.HIVENZA_WEBHOOK_SECRET! });
 
+// Every event type Hivenza sends (38), as of 0.3.0. New types can appear: handle an unknown one by ignoring it.
+export const WEBHOOK_EVENT_TYPES = [
+  'message.received',
+  'conversation.created',
+  'conversation.done',
+  'contact.created',
+  'contact.updated',
+  'post.published',
+  'post.failed',
+  'rating.received',
+  'ticket.assigned',
+  'ticket.state_changed',
+  'ticket.sla_breached',
+  'request.submitted',
+  'message.sent',
+  'post.scheduled',
+  'post.deleted',
+  'media.ready',
+  'account.disconnected',
+  'mention.received',
+  'activity.logged',
+  'workflow.run_started',
+  'workflow.step_done',
+  'workflow.goal_reached',
+  'workflow.run_failed',
+  'known_issue.declared',
+  'known_issue.updated',
+  'known_issue.resolved',
+  'queue.alert',
+  'approval.asked',
+  'approval.decided',
+  'issue.linked',
+  'issue.changed',
+  'issue.unlinked',
+  'checklist.completed',
+  'booking.made',
+  'booking.changed',
+  'booking.cancelled',
+  'booking.missed',
+  'survey.answered',
+] as const;
+export type WebhookEventType = (typeof WEBHOOK_EVENT_TYPES)[number];
+
 export interface WebhookEvent<T = Record<string, unknown>> {
   id: string;
   object: 'event';
   // "message.received", "post.published"… (see the events in the developers' docs).
-  type: string;
+  type: WebhookEventType | (string & {});
   apiVersion: string;
   createdAt: string;
   workspace: { id: string };
