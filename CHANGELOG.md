@@ -2,6 +2,10 @@
 
 This package follows semantic versioning: a breaking change only in a new major version.
 
+## 0.3.1
+
+- Docs: README rewritten for a developer who has never seen Hivenza: a one-minute quick start, where to get a key (Settings → API keys) and a webhook secret, installing in ESM, CommonJS and TypeScript, creating posts in TypeScript, pagination, errors with their fixes, rate limits, setting up and testing webhooks, an options reference and a troubleshooting list. Every TypeScript example is type-checked. No code changed.
+
 ## 0.3.0
 
 - 168 operations (75 new, none removed, no signature changed incompatibly): the reports datasets (`listReportDatasets`, `reportConversations`, `reportTickets`, `reportTicketEvents`, `reportReviews`, `reportPosts`, `reportAccountMetrics`, `reportWebsiteGa4Days`, `reportUsage`, `reportSupervisionLog`, `reportQueueAlertEvents`); website analytics (`listWebsites`, `getWebsiteOverview`, `getWebsiteJourney`, `getWebsiteFunnels`, `getWebsiteGa4`); knowledge sources and `searchKnowledge`; media folders, `updateMedia`, `cropMedia`, `fitMedia`; links and link stats; known issues; case status, documents and messages; the supervisor (live queue, wall, supervisions, shift report, short tomorrow, queue alerts); ticket approvals; issue-tracker links; checklists; banners; bookings; campaign analytics and people of a workflow; `listContactCampaigns`; `getBrandMailMethod`.

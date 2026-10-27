@@ -6,7 +6,7 @@ describe('every operation', () => {
   const ids = Object.keys(OPERATIONS) as OperationId[];
   it('covers the 168 operations of the 0.3.0 spec', () => {
     expect(ids.length).toBe(168);
-    expect(VERSION).toBe('0.3.0');
+    expect(VERSION).toBe('0.3.1');
   });
   it.each(ids)('%s sends the right request', async (id) => {
     const info = OPERATIONS[id];
