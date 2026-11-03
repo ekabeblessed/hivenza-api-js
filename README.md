@@ -6,7 +6,7 @@ The typed JavaScript client for [Hivenza's developer API](https://hivenza.com/de
 
 ## Quick start (1 minute)
 
-1. Get a key: in Hivenza open **https://hivenza.com/api-keys** (Settings → API keys; owners and admins), press **New key**, choose **Test** and copy the key, which is shown once. See [Get your key](#get-your-key).
+1. Get a key: in Hivenza open **https://hivenza.com/api-keys** (Settings → Developers; owners and admins), press **New key**, choose **Test** and copy the key, which is shown once. See [Get your key](#get-your-key).
 2. In a new folder (ESM, so `await` works at the top level):
 
 ```sh
@@ -55,7 +55,7 @@ It appears in Hivenza as a draft. (In TypeScript the body also asks for `removeM
 ## Get your key
 
 1. Sign in to Hivenza as an owner or admin of the workspace.
-2. Open **Settings → API keys**. If you don't see it in the sidebar yet, open **https://hivenza.com/api-keys** directly.
+2. Open **Settings → Developers**. If you don't see it in the sidebar yet, open **https://hivenza.com/api-keys** directly.
 3. Press **New key**. Name it, then pick:
    - **Live** (`hvz_live_…`) works on your real brands: posts go out, replies reach customers. **Test** (`hvz_test_…`) works on a pretend brand; nothing leaves Hivenza. Start with a test key.
    - The **permissions** it needs (see each operation's `OPERATIONS[id].scopes`; `posts:write` makes drafts, `posts:publish` schedules and publishes, `brands:read` lists brands). Fewer is safer.
@@ -181,7 +181,7 @@ The ones you will meet first:
 | Status and `code` | Meaning and fix |
 |---|---|
 | 401 `invalid_api_key`, `missing_api_key` | No key, or not all of it was copied. Keys start `hvz_live_` or `hvz_test_`. |
-| 401 `revoked_api_key`, `expired_api_key` | Make a new key (Settings → API keys). |
+| 401 `revoked_api_key`, `expired_api_key` | Make a new key (Settings → Developers). |
 | 403 `missing_scope` | The key lacks a permission; the message names it. Make a key with it. |
 | 403 `ip_not_allowed` | The key is limited to some server addresses and this isn't one. |
 | 404 `not_found` | Wrong id, or a brand the key may not see (it answers as if it didn't exist). |
@@ -293,7 +293,7 @@ const queue = await hivenza.getLiveQueue();
 
 ## Connect with Hivenza (apps that post for their users)
 
-If your app lets its own users post to their Instagram, Facebook or TikTok through Hivenza, `@hivenza/api/connect` makes the OAuth calls for you. Run them on your server: the client secret never goes in a mobile app or a browser. Register your app first (Settings → API keys → Apps) to get a client id and secret. The flow and every call are in the guide [Let your app's users post through Hivenza](https://hivenza.com/developers/guides/partner-apps).
+If your app lets its own users post to their Instagram, Facebook or TikTok through Hivenza, `@hivenza/api/connect` makes the OAuth calls for you. Run them on your server: the client secret never goes in a mobile app or a browser. Register your app first (Settings → Developers → Apps) to get a client id and secret. Add every return address your app uses, one per line (one for each server or domain that starts the sign-in): `redirectUri` must match one of them exactly. The flow and every call are in the guide [Let your app's users post through Hivenza](https://hivenza.com/developers/guides/partner-apps).
 
 ```ts
 import { authorizeUrl, createPkce, createState, exchangeCode, refreshTokens, revokeToken } from '@hivenza/api/connect';
